@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123c32">
+<title>Organizador de Contas</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6f4;color:#18352c}
+header{background:#123c32;color:white;padding:22px 16px}
+header h1{margin:0 0 6px;font-size:25px}
+header p{margin:0;color:#d8e9df}
+main{max-width:720px;margin:auto;padding:16px}
+.card{background:white;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 9px #173b3010}
+.total{font-size:30px;font-weight:bold;color:#137653;margin:8px 0}
+label{display:block;font-weight:bold;margin:13px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #bdccc4;border-radius:8px;font-size:16px;background:white}
+button{border:0;border-radius:9px;padding:12px 15px;font-size:15px;font-weight:bold;cursor:pointer}
+.primary{background:#137653;color:white;width:100%;margin-top:16px}
+.secondary{background:#e1eee7;color:#174b38}
+.danger{background:#fbe7e5;color:#a12b24}
+.small{font-size:13px;color:#62766b;line-height:1.5}
+.account{border-top:1px solid #e2e9e5;padding:14px 0}
+.account h3{margin:0 0 6px}
+.account p{margin:5px 0;overflow-wrap:anywhere}
+.tag{display:inline-block;background:#e2eee7;padding:5px 8px;border-radius:6px;font-size:12px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>Organizador de Contas</h1>
+<p>Organize suas contas e planeje seus pagamentos.</p>
+</header>
+<main>
+<section class="card">
+<h2>Resumo do mês</h2>
+<label for="mes">Mês de referência</label>
+<input id="mes" type="month">
+<p>Total das contas</p><div class="total" id="total">R$ 0,00</div>
+<div class="row"><span>Contas cadastradas</span><strong id="quantidade">0</strong></div>
+<div class="row"><span>Contas pagas</span><strong id="pagas">0</strong></div>
+<div class="row"><span>Contas pendentes</span><strong id="pendentes">0</strong></div>
+<hr>
+<label for="saldo">Saldo informado pelo usuário (R$)</label>
+<input id="saldo" type="number" min="0" step="0.01" placeholder="0,00">
+<p class="small">Este saldo é apenas um registro manual. O site não recebe nem confirma transferências bancárias.</p>
+<div class="row"><span>Falta reservar</span><strong id="falta">R$ 0,00</strong></div>
+</section>
+
+<section class="card">
+<h2>Adicionar conta</h2>
+<form id="form">
+<label for="nome">Nome da conta</label>
+<input id="nome" required placeholder="Ex.: Aluguel">
+
+<label for="valor">Valor (R$)</label>
+<input id="valor" type="number" min="0.01" step="0.01" required placeholder="Ex.: 1200,00">
+
+<label for="vencimento">Data de vencimento</label>
+<input id="vencimento" type="date" required>
+
+<label for="tipo">Forma de pagamento</label>
+<select id="tipo">
+<option value="pix">Pix para chave do recebedor</option>
+<option value="boleto">Boleto / código de barras</option>
+<option value="copia">Pix Copia e Cola</option>
+</select>
+
+<div id="camposPix">
+<label for="recebedor">Nome do recebedor</label>
+<input id="recebedor" placeholder="Nome da pessoa ou empresa">
+<label for="chave">Chave Pix do recebedor</label>
+<input id="chave" placeholder="CPF, CNPJ, celular, e-mail ou chave aleatória">
+</div>
+
+<div id="camposCodigo" class="hidden">
+<label for="codigo">Código de barras, linha digitável ou Pix Copia e Cola</label>
+<textarea id="codigo" rows="4" placeholder="Cole aqui o código de pagamento"></textarea>
+</div>
+
+<label for="observacao">Observações (opcional)</label>
+<input id="observacao" placeholder="Ex.: parcela 2 de 12">
+<button class="primary" type="submit">Salvar conta</button>
+</form>
+</section>
+
+<section class="card">
+<h2>Minhas contas</h2>
+<div id="lista"></div>
+<p class="small">Os dados ficam salvos neste navegador. Eles não são sincronizados entre dispositivos. Não use este protótipo para guardar informações bancárias sensíveis.</p>
+</section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const dinheiro = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const hoje = new Date();
+$('mes').value = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+let contas = [];
+try { contas = JSON.parse(localStorage.getItem('organizadorContasV1') || '[]'); } catch(e) {}
+$('saldo').value = localStorage.getItem('organizadorSaldoV1') || '';
+
+function salvar(){
+ try {
+  localStorage.setItem('organizadorContasV1',JSON.stringify(contas));
+  localStorage.setItem('organizadorSaldoV1',$('saldo').value);
+ } catch(e) { alert('Não foi possível salvar neste navegador.'); }
+}
+function campos(){
+ const t=$('tipo').value;
+ $('camposPix').classList.toggle('hidden',t!=='pix');
+ $('camposCodigo').classList.toggle('hidden',t==='pix');
+}
+$('tipo').addEventListener('change',campos);
+$('saldo').addEventListener('input',()=>{salvar();render();});
+$('mes').addEventListener('change',render);
+
+$('form').addEventListener('submit',e=>{
+ e.preventDefault();
+ const conta={
+ id:Date.now().toString()+Math.random().toString(16).slice(2),
+ nome:$('nome').value.trim(),
+ valor:Number($('valor').value),
+ vencimento:$('vencimento').value,
+ tipo:$('tipo').value,
+ recebedor:$('recebedor').value.trim(),
+ chave:$('chave').value.trim(),
+ codigo:$('codigo').value.trim(),
+ observacao:$('observacao').value.trim(),
+ paga:false
+ };
+ if(conta.tipo==='pix'&&!conta.chave){
+  alert('Informe a chave Pix do recebedor.');return;
+ }
+ if(conta.tipo!=='pix'&&!conta.codigo){
+  alert('Informe o código de pagamento.');return;
+ }
+ contas.push(conta);salvar();e.target.reset();campos();render();
+});
+
+function render(){
+ const mes=$('mes').value;
+ const doMes=contas.filter(c=>c.vencimento.startsWith(mes));
+ const total=doMes.reduce((s,c)=>s+c.valor,0);
+ const pagas=doMes.filter(c=>c.paga);
+ const saldo=Math.max(0,Number($('saldo').value||0));
+ $('total').textContent=dinheiro(total);
+ $('quantidade').textContent=doMes.length;
+ $('pagas').textContent=pagas.length;
+ $('pendentes').textContent=doMes.length-pagas.length;
+ $('falta').textContent=dinheiro(Math.max(0,total-pagas.reduce((s,c)=>s+c.valor,0)-saldo));
+ $('lista').innerHTML='';
+ if(!doMes.length){$('lista').textContent='Nenhuma conta cadastrada para este mês.';return;}
+ doMes.sort((a,b)=>a.vencimento.localeCompare(b.vencimento)).forEach(c=>{
+  const el=document.createElement('div');el.className='account';
+  const titulo=document.createElement('h3');titulo.textContent=c.nome;el.appendChild(titulo);
+  const p=document.createElement('p');p.textContent=dinheiro(c.valor)+' · Vencimento: '+c.vencimento.split('-').reverse().join('/');el.appendChild(p);
+  const tag=document.createElement('span');tag.className='tag';tag.textContent=c.paga?'Marcada como paga':'Pendente';el.appendChild(tag);
+  const detalhe=document.createElement('p');detalhe.className='small';
+  detalhe.textContent=c.tipo==='pix'?'Pix · Recebedor: '+(c.recebedor||'não informado')+' · Chave: '+(c.chave||'não informada'):c.tipo==='boleto'?'Boleto / código de barras':'Pix Copia e Cola';
+  el.appendChild(detalhe);
+  if(c.observacao){const obs=document.createElement('p');obs.textContent=c.observacao;el.appendChild(obs);}
+  const botoes=document.createElement('div');botoes.className='row';botoes.style.marginTop='10px';
+  if(c.codigo){
+   const copiar=document.createElement('button');copiar.className='secondary';copiar.textContent='Copiar código';
+   copiar.onclick=async()=>{try{await navigator.clipboard.writeText(c.codigo);alert('Código copiado. Confira os dados no seu banco antes de pagar.')}catch(e){alert('Não foi possível copiar automaticamente. Selecione e copie o código cadastrado.')}};
+   botoes.appendChild(copiar);
+  }
+  const pagar=document.createElement('button');pagar.className='secondary';pagar.textContent=c.paga?'Desmarcar paga':'Marcar como paga';
+  pagar.onclick=()=>{c.paga=!c.paga;salvar();render();};botoes.appendChild(pagar);
+  const excluir=document.createElement('button');excluir.className='danger';excluir.textContent='Excluir';
+  excluir.onclick=()=>{if(confirm('Excluir esta conta?')){contas=contas.filter(x=>x.id!==c.id);salvar();render();}};
+  botoes.appendChild(excluir);el.appendChild(botoes);$('lista').appendChild(el);
+ });
+}
+campos();render();
+</script>
+</body>
+</html>
