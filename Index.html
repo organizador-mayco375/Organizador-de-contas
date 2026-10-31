@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,177 +7,597 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#123c32">
 <title>Organizador de Contas</title>
+
 <style>
+:root {
+  --green:#123c32;
+  --green2:#16805b;
+  --bg:#f2f6f3;
+  --white:#fff;
+  --text:#20372e;
+  --muted:#718078;
+  --red:#c43d36;
+  --orange:#d78b22;
+  --border:#e2eae5;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6f4;color:#18352c}
-header{background:#123c32;color:white;padding:22px 16px}
-header h1{margin:0 0 6px;font-size:25px}
-header p{margin:0;color:#d8e9df}
-main{max-width:720px;margin:auto;padding:16px}
-.card{background:white;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 9px #173b3010}
-.total{font-size:30px;font-weight:bold;color:#137653;margin:8px 0}
-label{display:block;font-weight:bold;margin:13px 0 6px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #bdccc4;border-radius:8px;font-size:16px;background:white}
-button{border:0;border-radius:9px;padding:12px 15px;font-size:15px;font-weight:bold;cursor:pointer}
-.primary{background:#137653;color:white;width:100%;margin-top:16px}
-.secondary{background:#e1eee7;color:#174b38}
-.danger{background:#fbe7e5;color:#a12b24}
-.small{font-size:13px;color:#62766b;line-height:1.5}
-.account{border-top:1px solid #e2e9e5;padding:14px 0}
-.account h3{margin:0 0 6px}
-.account p{margin:5px 0;overflow-wrap:anywhere}
-.tag{display:inline-block;background:#e2eee7;padding:5px 8px;border-radius:6px;font-size:12px}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(135deg,#123c32,#1b7252);
+  color:white;
+  padding:25px 18px;
+}
+header h1{margin:0 0 7px;font-size:25px}
+header p{margin:0;color:#d9eee3;font-size:14px}
+main{max-width:850px;margin:auto;padding:16px}
+.card{
+  background:white;
+  border-radius:15px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 3px 12px #173b3010;
+}
+h2{font-size:19px;margin:0 0 15px}
+h3{font-size:16px;margin:0 0 7px}
+label{
+  display:block;
+  font-weight:bold;
+  font-size:14px;
+  margin:13px 0 6px;
+}
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccd9d1;
+  border-radius:9px;
+  font-size:16px;
+  background:white;
+  color:var(--text);
+}
+button{
+  border:0;
+  border-radius:9px;
+  padding:12px 14px;
+  font-size:14px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{
+  background:var(--green2);
+  color:white;
+  width:100%;
+  margin-top:17px;
+}
+.secondary{background:#e5f1e9;color:#17553d}
+.danger{background:#fce9e7;color:#a32e29}
+.dark{background:var(--green);color:white}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.stat{
+  background:#f2f7f3;
+  padding:14px;
+  border-radius:11px;
+  min-width:0;
+}
+.stat span{display:block;font-size:12px;color:var(--muted)}
+.stat strong{
+  display:block;
+  font-size:19px;
+  margin-top:7px;
+  overflow-wrap:anywhere;
+}
+.green{color:var(--green2)}
+.red{color:var(--red)}
+.orange{color:var(--orange)}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+}
+.account{
+  border-top:1px solid var(--border);
+  padding:15px 0;
+}
+.account p{margin:6px 0;font-size:14px;overflow-wrap:anywhere}
+.tag{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:bold;
+  background:#e8f3eb;
+  color:#176343;
+}
+.tag.pending{background:#fff1d9;color:#98600b}
+.tag.late{background:#fce5e3;color:#a32e29}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.actions button{flex:1}
 .hidden{display:none}
+.empty{
+  padding:20px;
+  text-align:center;
+  color:var(--muted);
+}
+hr{border:0;border-top:1px solid var(--border);margin:17px 0}
+@media(min-width:600px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
+
 <body>
+
 <header>
-<h1>Organizador de Contas</h1>
-<p>Organize suas contas e planeje seus pagamentos.</p>
+  <h1>Organizador de Contas</h1>
+  <p>Seu dinheiro organizado. Sua vida mais tranquila.</p>
 </header>
+
 <main>
+
 <section class="card">
-<h2>Resumo do mês</h2>
-<label for="mes">Mês de referência</label>
-<input id="mes" type="month">
-<p>Total das contas</p><div class="total" id="total">R$ 0,00</div>
-<div class="row"><span>Contas cadastradas</span><strong id="quantidade">0</strong></div>
-<div class="row"><span>Contas pagas</span><strong id="pagas">0</strong></div>
-<div class="row"><span>Contas pendentes</span><strong id="pendentes">0</strong></div>
-<hr>
-<label for="saldo">Saldo informado pelo usuário (R$)</label>
-<input id="saldo" type="number" min="0" step="0.01" placeholder="0,00">
-<p class="small">Este saldo é apenas um registro manual. O site não recebe nem confirma transferências bancárias.</p>
-<div class="row"><span>Falta reservar</span><strong id="falta">R$ 0,00</strong></div>
+  <h2>Resumo financeiro</h2>
+
+  <label for="mes">Mês de referência</label>
+  <input type="month" id="mes">
+
+  <label for="saldoInicial">Saldo inicial do mês (R$)</label>
+  <input type="number" id="saldoInicial" min="0" step="0.01" placeholder="0,00">
+
+  <div class="grid" style="margin-top:15px">
+    <div class="stat">
+      <span>Saldo disponível</span>
+      <strong class="green" id="saldoAtual">R$ 0,00</strong>
+    </div>
+    <div class="stat">
+      <span>Saldo previsto</span>
+      <strong id="saldoPrevisto">R$ 0,00</strong>
+    </div>
+    <div class="stat">
+      <span>Entradas do mês</span>
+      <strong class="green" id="totalEntradas">R$ 0,00</strong>
+    </div>
+    <div class="stat">
+      <span>Despesas do mês</span>
+      <strong class="red" id="totalDespesas">R$ 0,00</strong>
+    </div>
+    <div class="stat">
+      <span>Contas pendentes</span>
+      <strong class="orange" id="totalPendente">R$ 0,00</strong>
+    </div>
+    <div class="stat">
+      <span>Contas atrasadas</span>
+      <strong class="red" id="totalAtrasado">R$ 0,00</strong>
+    </div>
+  </div>
+
+  <hr>
+  <div class="row">
+    <span>Movimentações cadastradas</span>
+    <strong id="quantidade">0</strong>
+  </div>
+  <p class="small">
+    O saldo é calculado com base nos valores que você cadastrar.
+    O aplicativo não acessa sua conta bancária.
+  </p>
 </section>
 
 <section class="card">
-<h2>Adicionar conta</h2>
-<form id="form">
-<label for="nome">Nome da conta</label>
-<input id="nome" required placeholder="Ex.: Aluguel">
+  <h2>Cadastrar movimentação</h2>
 
-<label for="valor">Valor (R$)</label>
-<input id="valor" type="number" min="0.01" step="0.01" required placeholder="Ex.: 1200,00">
+  <form id="form">
 
-<label for="vencimento">Data de vencimento</label>
-<input id="vencimento" type="date" required>
+    <label for="tipo">Tipo de movimentação</label>
+    <select id="tipo">
+      <option value="despesa">Despesa / Conta a pagar</option>
+      <option value="entrada">Entrada / Dinheiro a receber</option>
+    </select>
 
-<label for="tipo">Forma de pagamento</label>
-<select id="tipo">
-<option value="pix">Pix para chave do recebedor</option>
-<option value="boleto">Boleto / código de barras</option>
-<option value="copia">Pix Copia e Cola</option>
-</select>
+    <label for="nome">Nome</label>
+    <input id="nome" required placeholder="Ex.: Aluguel, salário, energia">
 
-<div id="camposPix">
-<label for="recebedor">Nome do recebedor</label>
-<input id="recebedor" placeholder="Nome da pessoa ou empresa">
-<label for="chave">Chave Pix do recebedor</label>
-<input id="chave" placeholder="CPF, CNPJ, celular, e-mail ou chave aleatória">
-</div>
+    <label for="valor">Valor (R$)</label>
+    <input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00">
 
-<div id="camposCodigo" class="hidden">
-<label for="codigo">Código de barras, linha digitável ou Pix Copia e Cola</label>
-<textarea id="codigo" rows="4" placeholder="Cole aqui o código de pagamento"></textarea>
-</div>
+    <label for="data">Data de vencimento ou recebimento</label>
+    <input id="data" type="date" required>
 
-<label for="observacao">Observações (opcional)</label>
-<input id="observacao" placeholder="Ex.: parcela 2 de 12">
-<button class="primary" type="submit">Salvar conta</button>
-</form>
+    <label for="categoria">Categoria</label>
+    <select id="categoria">
+      <option>Moradia</option>
+      <option>Alimentação</option>
+      <option>Transporte</option>
+      <option>Salário</option>
+      <option>Comissão</option>
+      <option>Cartão de crédito</option>
+      <option>Educação</option>
+      <option>Saúde</option>
+      <option>Água e energia</option>
+      <option>Internet e telefone</option>
+      <option>Empréstimos</option>
+      <option>Lazer</option>
+      <option>Outros</option>
+    </select>
+
+    <label for="tipoPagamento">Forma de pagamento (opcional)</label>
+    <select id="tipoPagamento">
+      <option value="">Não informado</option>
+      <option value="Pix">Pix</option>
+      <option value="Boleto">Boleto</option>
+      <option value="Dinheiro">Dinheiro</option>
+      <option value="Cartão">Cartão</option>
+      <option value="Transferência">Transferência</option>
+    </select>
+
+    <label for="codigo">Código Pix ou boleto (opcional)</label>
+    <textarea id="codigo" rows="3" placeholder="Cole o código aqui"></textarea>
+
+    <label for="observacao">Observações (opcional)</label>
+    <input id="observacao" placeholder="Ex.: Parcela 2 de 12">
+
+    <button class="primary" type="submit">Salvar movimentação</button>
+  </form>
 </section>
 
 <section class="card">
-<h2>Minhas contas</h2>
-<div id="lista"></div>
-<p class="small">Os dados ficam salvos neste navegador. Eles não são sincronizados entre dispositivos. Não use este protótipo para guardar informações bancárias sensíveis.</p>
+  <h2>Minhas movimentações</h2>
+
+  <label for="filtro">Filtrar por tipo</label>
+  <select id="filtro">
+    <option value="todas">Todas</option>
+    <option value="despesa">Somente despesas</option>
+    <option value="entrada">Somente entradas</option>
+    <option value="pendentes">Somente pendentes</option>
+    <option value="pagas">Somente pagas / recebidas</option>
+  </select>
+
+  <div id="lista"></div>
 </section>
+
+<section class="card">
+  <h2>Segurança dos seus dados</h2>
+  <p class="small">
+    Seus dados ficam armazenados no navegador deste aparelho.
+    Eles não são enviados para um banco ou servidor.
+    Faça cópias de segurança regularmente.
+  </p>
+
+  <div class="actions">
+    <button class="secondary" onclick="exportar()">Fazer backup</button>
+    <button class="secondary" onclick="document.getElementById('arquivo').click()">Restaurar backup</button>
+  </div>
+
+  <input type="file" id="arquivo" accept=".json" class="hidden">
+</section>
+
 </main>
+
 <script>
 const $ = id => document.getElementById(id);
-const dinheiro = n => Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+
+const dinheiro = n => Number(n || 0).toLocaleString("pt-BR",{
+  style:"currency",
+  currency:"BRL"
+});
+
 const hoje = new Date();
-$('mes').value = hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
-let contas = [];
-try { contas = JSON.parse(localStorage.getItem('organizadorContasV1') || '[]'); } catch(e) {}
-$('saldo').value = localStorage.getItem('organizadorSaldoV1') || '';
+const hojeISO = [
+  hoje.getFullYear(),
+  String(hoje.getMonth()+1).padStart(2,"0"),
+  String(hoje.getDate()).padStart(2,"0")
+].join("-");
+
+$("mes").value = hojeISO.slice(0,7);
+$("data").value = hojeISO;
+
+let movimentacoes = [];
+
+try {
+  movimentacoes = JSON.parse(
+    localStorage.getItem("organizadorMaycoV2") || "[]"
+  );
+  if(!Array.isArray(movimentacoes)) movimentacoes = [];
+} catch(e) {
+  movimentacoes = [];
+}
+
+$("saldoInicial").value =
+  localStorage.getItem("organizadorSaldoInicialV2") || "";
 
 function salvar(){
- try {
-  localStorage.setItem('organizadorContasV1',JSON.stringify(contas));
-  localStorage.setItem('organizadorSaldoV1',$('saldo').value);
- } catch(e) { alert('Não foi possível salvar neste navegador.'); }
+  try {
+    localStorage.setItem(
+      "organizadorMaycoV2",
+      JSON.stringify(movimentacoes)
+    );
+    localStorage.setItem(
+      "organizadorSaldoInicialV2",
+      $("saldoInicial").value
+    );
+  } catch(e) {
+    alert("Não foi possível salvar os dados neste aparelho.");
+  }
 }
-function campos(){
- const t=$('tipo').value;
- $('camposPix').classList.toggle('hidden',t!=='pix');
- $('camposCodigo').classList.toggle('hidden',t==='pix');
-}
-$('tipo').addEventListener('change',campos);
-$('saldo').addEventListener('input',()=>{salvar();render();});
-$('mes').addEventListener('change',render);
 
-$('form').addEventListener('submit',e=>{
- e.preventDefault();
- const conta={
- id:Date.now().toString()+Math.random().toString(16).slice(2),
- nome:$('nome').value.trim(),
- valor:Number($('valor').value),
- vencimento:$('vencimento').value,
- tipo:$('tipo').value,
- recebedor:$('recebedor').value.trim(),
- chave:$('chave').value.trim(),
- codigo:$('codigo').value.trim(),
- observacao:$('observacao').value.trim(),
- paga:false
- };
- if(conta.tipo==='pix'&&!conta.chave){
-  alert('Informe a chave Pix do recebedor.');return;
- }
- if(conta.tipo!=='pix'&&!conta.codigo){
-  alert('Informe o código de pagamento.');return;
- }
- contas.push(conta);salvar();e.target.reset();campos();render();
+$("saldoInicial").addEventListener("input",()=>{
+  salvar();
+  render();
+});
+
+$("mes").addEventListener("change",render);
+$("filtro").addEventListener("change",render);
+
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+
+  const item = {
+    id: Date.now().toString() + Math.random().toString(16).slice(2),
+    tipo: $("tipo").value,
+    nome: $("nome").value.trim(),
+    valor: Number($("valor").value),
+    data: $("data").value,
+    categoria: $("categoria").value,
+    pagamento: $("tipoPagamento").value,
+    codigo: $("codigo").value.trim(),
+    observacao: $("observacao").value.trim(),
+    concluido: false
+  };
+
+  if(!item.nome || !item.data || item.valor <= 0){
+    alert("Confira os campos antes de salvar.");
+    return;
+  }
+
+  movimentacoes.push(item);
+  salvar();
+
+  this.reset();
+  $("data").value = hojeISO;
+  $("tipo").value = "despesa";
+
+  render();
+  alert("Movimentação cadastrada com sucesso!");
 });
 
 function render(){
- const mes=$('mes').value;
- const doMes=contas.filter(c=>c.vencimento.startsWith(mes));
- const total=doMes.reduce((s,c)=>s+c.valor,0);
- const pagas=doMes.filter(c=>c.paga);
- const saldo=Math.max(0,Number($('saldo').value||0));
- $('total').textContent=dinheiro(total);
- $('quantidade').textContent=doMes.length;
- $('pagas').textContent=pagas.length;
- $('pendentes').textContent=doMes.length-pagas.length;
- $('falta').textContent=dinheiro(Math.max(0,total-pagas.reduce((s,c)=>s+c.valor,0)-saldo));
- $('lista').innerHTML='';
- if(!doMes.length){$('lista').textContent='Nenhuma conta cadastrada para este mês.';return;}
- doMes.sort((a,b)=>a.vencimento.localeCompare(b.vencimento)).forEach(c=>{
-  const el=document.createElement('div');el.className='account';
-  const titulo=document.createElement('h3');titulo.textContent=c.nome;el.appendChild(titulo);
-  const p=document.createElement('p');p.textContent=dinheiro(c.valor)+' · Vencimento: '+c.vencimento.split('-').reverse().join('/');el.appendChild(p);
-  const tag=document.createElement('span');tag.className='tag';tag.textContent=c.paga?'Marcada como paga':'Pendente';el.appendChild(tag);
-  const detalhe=document.createElement('p');detalhe.className='small';
-  detalhe.textContent=c.tipo==='pix'?'Pix · Recebedor: '+(c.recebedor||'não informado')+' · Chave: '+(c.chave||'não informada'):c.tipo==='boleto'?'Boleto / código de barras':'Pix Copia e Cola';
-  el.appendChild(detalhe);
-  if(c.observacao){const obs=document.createElement('p');obs.textContent=c.observacao;el.appendChild(obs);}
-  const botoes=document.createElement('div');botoes.className='row';botoes.style.marginTop='10px';
-  if(c.codigo){
-   const copiar=document.createElement('button');copiar.className='secondary';copiar.textContent='Copiar código';
-   copiar.onclick=async()=>{try{await navigator.clipboard.writeText(c.codigo);alert('Código copiado. Confira os dados no seu banco antes de pagar.')}catch(e){alert('Não foi possível copiar automaticamente. Selecione e copie o código cadastrado.')}};
-   botoes.appendChild(copiar);
+  const mes = $("mes").value;
+  const saldoInicial = Number($("saldoInicial").value || 0);
+
+  const doMes = movimentacoes.filter(
+    m => m.data && m.data.startsWith(mes)
+  );
+
+  const entradas = doMes.filter(m=>m.tipo==="entrada");
+  const despesas = doMes.filter(m=>m.tipo==="despesa");
+
+  const soma = lista => lista.reduce(
+    (total,m)=>total+Number(m.valor),0
+  );
+
+  const entradasRecebidas = soma(entradas.filter(m=>m.concluido));
+  const despesasPagas = soma(despesas.filter(m=>m.concluido));
+
+  const totalEntradas = soma(entradas);
+  const totalDespesas = soma(despesas);
+
+  const pendentes = despesas.filter(m=>!m.concluido);
+  const atrasadas = pendentes.filter(m=>m.data < hojeISO);
+
+  $("saldoAtual").textContent = dinheiro(
+    saldoInicial + entradasRecebidas - despesasPagas
+  );
+
+  $("saldoPrevisto").textContent = dinheiro(
+    saldoInicial + totalEntradas - totalDespesas
+  );
+
+  $("totalEntradas").textContent = dinheiro(totalEntradas);
+  $("totalDespesas").textContent = dinheiro(totalDespesas);
+  $("totalPendente").textContent = dinheiro(soma(pendentes));
+  $("totalAtrasado").textContent = dinheiro(soma(atrasadas));
+  $("quantidade").textContent = doMes.length;
+
+  const filtro = $("filtro").value;
+
+  let exibidas = [...doMes];
+
+  if(filtro==="despesa")
+    exibidas = exibidas.filter(m=>m.tipo==="despesa");
+
+  if(filtro==="entrada")
+    exibidas = exibidas.filter(m=>m.tipo==="entrada");
+
+  if(filtro==="pendentes")
+    exibidas = exibidas.filter(m=>!m.concluido);
+
+  if(filtro==="pagas")
+    exibidas = exibidas.filter(m=>m.concluido);
+
+  exibidas.sort((a,b)=>a.data.localeCompare(b.data));
+
+  const lista = $("lista");
+  lista.innerHTML = "";
+
+  if(!exibidas.length){
+    lista.innerHTML = '<div class="empty">Nenhuma movimentação encontrada neste mês.</div>';
+    return;
   }
-  const pagar=document.createElement('button');pagar.className='secondary';pagar.textContent=c.paga?'Desmarcar paga':'Marcar como paga';
-  pagar.onclick=()=>{c.paga=!c.paga;salvar();render();};botoes.appendChild(pagar);
-  const excluir=document.createElement('button');excluir.className='danger';excluir.textContent='Excluir';
-  excluir.onclick=()=>{if(confirm('Excluir esta conta?')){contas=contas.filter(x=>x.id!==c.id);salvar();render();}};
-  botoes.appendChild(excluir);el.appendChild(botoes);$('lista').appendChild(el);
- });
+
+  exibidas.forEach(m=>{
+    const el = document.createElement("div");
+    el.className = "account";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = m.nome;
+    el.appendChild(titulo);
+
+    const valor = document.createElement("p");
+    valor.innerHTML = "<strong></strong>";
+    valor.querySelector("strong").textContent =
+      dinheiro(m.valor);
+    el.appendChild(valor);
+
+    const dataFormatada = m.data.split("-").reverse().join("/");
+
+    const detalhe = document.createElement("p");
+    detalhe.textContent =
+      (m.tipo==="entrada"?"Entrada":"Despesa") +
+      " · " + m.categoria +
+      " · Data: " + dataFormatada;
+    el.appendChild(detalhe);
+
+    const tag = document.createElement("span");
+    tag.className = "tag";
+
+    if(m.concluido){
+      tag.textContent = m.tipo==="entrada"?"Recebido":"Pago";
+    } else if(m.tipo==="despesa" && m.data < hojeISO){
+      tag.textContent = "Atrasada";
+      tag.classList.add("late");
+    } else {
+      tag.textContent = "Pendente";
+      tag.classList.add("pending");
+    }
+
+    el.appendChild(tag);
+
+    if(m.pagamento){
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "Pagamento: " + m.pagamento;
+      el.appendChild(p);
+    }
+
+    if(m.observacao){
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = m.observacao;
+      el.appendChild(p);
+    }
+
+    const botoes = document.createElement("div");
+    botoes.className = "actions";
+
+    const concluir = document.createElement("button");
+    concluir.className = "secondary";
+    concluir.textContent = m.concluido
+      ? "Desfazer"
+      : m.tipo==="entrada"?"Marcar recebido":"Marcar como paga";
+
+    concluir.onclick = ()=>{
+      m.concluido = !m.concluido;
+      salvar();
+      render();
+    };
+    botoes.appendChild(concluir);
+
+    if(m.codigo){
+      const copiar = document.createElement("button");
+      copiar.className = "secondary";
+      copiar.textContent = "Copiar código";
+
+      copiar.onclick = async()=>{
+        try{
+          await navigator.clipboard.writeText(m.codigo);
+          alert("Código copiado! Confira os dados antes de pagar.");
+        }catch(e){
+          const campo = document.createElement("textarea");
+          campo.value = m.codigo;
+          document.body.appendChild(campo);
+          campo.select();
+          document.execCommand("copy");
+          campo.remove();
+          alert("Código copiado. Confira os dados antes de pagar.");
+        }
+      };
+      botoes.appendChild(copiar);
+    }
+
+    const excluir = document.createElement("button");
+    excluir.className = "danger";
+    excluir.textContent = "Excluir";
+
+    excluir.onclick = ()=>{
+      if(confirm("Deseja realmente excluir esta movimentação?")){
+        movimentacoes = movimentacoes.filter(x=>x.id!==m.id);
+        salvar();
+        render();
+      }
+    };
+
+    botoes.appendChild(excluir);
+    el.appendChild(botoes);
+    lista.appendChild(el);
+  });
 }
-campos();render();
+
+function exportar(){
+  const dados = {
+    movimentacoes: movimentacoes,
+    saldoInicial: $("saldoInicial").value
+  };
+
+  const arquivo = new Blob(
+    [JSON.stringify(dados,null,2)],
+    {type:"application/json"}
+  );
+
+  const url = URL.createObjectURL(arquivo);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "backup-organizador-contas.json";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+$("arquivo").addEventListener("change",function(){
+  const arquivo = this.files[0];
+  if(!arquivo) return;
+
+  const leitor = new FileReader();
+
+  leitor.onload = ()=>{
+    try{
+      const dados = JSON.parse(leitor.result);
+
+      if(!Array.isArray(dados.movimentacoes)){
+        throw new Error("Arquivo inválido");
+      }
+
+      if(!confirm("Restaurar backup? Os dados atuais serão substituídos.")){
+        return;
+      }
+
+      movimentacoes = dados.movimentacoes;
+      $("saldoInicial").value = dados.saldoInicial || "";
+
+      salvar();
+      render();
+
+      alert("Backup restaurado com sucesso!");
+    }catch(e){
+      alert("Não foi possível restaurar. Confira o arquivo.");
+    }
+  };
+
+  leitor.readAsText(arquivo);
+  this.value = "";
+});
+
+render();
 </script>
+
 </body>
 </html>
